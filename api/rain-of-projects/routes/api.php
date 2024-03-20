@@ -57,7 +57,7 @@ Route::get('/users', [UserController::class, 'list']);
 Route::get('/users/{id}', [UserController::class, 'item']);
 Route::post('/users/create', [UserController::class, 'create']);
 Route::put('/users/{id}/update', [UserController::class, 'update']);
-
+Route::delete('/users/{id}/delete', [UserController::class, 'delete']);
 
 
 
