@@ -11,14 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('activityhistory', function (Blueprint $table) {
+        Schema::create('activityhistories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('users_id');
-            $table->integer('tags_id');
-            $table->integer('projects_id');
-            $table->integer('groups_id');
+            $table->unsignedBigInteger('users_id');
+            $table->unsignedBigInteger('tags_id');
+            $table->unsignedBigInteger('projects_id');
+            $table->unsignedBigInteger('groups_id');
             $table->timestamps();
+
+            // Foreign keys
+            $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('tags_id')->references('id')->on('tags')->onDelete('cascade');
+            $table->foreign('projects_id')->references('id')->on('projects')->onDelete('cascade');
+            $table->foreign('groups_id')->references('id')->on('groups')->onDelete('cascade');
         });
     }
 
@@ -27,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('activityhistory');
+        Schema::dropIfExists('activityhistories');
     }
 };
