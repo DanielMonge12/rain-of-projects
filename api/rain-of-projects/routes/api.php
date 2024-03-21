@@ -4,7 +4,7 @@ use App\Http\Controllers\api\TagController;
 use App\Http\Controllers\api\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\ProjectController;
 use App\Http\Controllers\api\GroupController;
 use App\Http\Controllers\api\ActivityHistoryController;
@@ -62,3 +62,6 @@ Route::delete('/users/{id}/delete', [UserController::class, 'delete']);
 
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login{id}', [AuthController::class, 'login']);
+
+

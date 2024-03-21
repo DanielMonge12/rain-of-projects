@@ -3,80 +3,150 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function list() {
-        $users = User::all();
+    public function list () {
 
-        return response()->json($users);
-    }
+        $Users = User::all();
 
-    public function item($id) {
-        $user = User::find($id);
+        $list = [];
 
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
+        foreach($Users as $User){
+
+            $objetc = [
+
+                "id" => $User->id,
+                "name" => $User->name,
+                "surname" => $User->surname,
+                "email" => $User->email,
+                "phone" => $User->phone,
+                "email_verified_at" => $User->email_verified_at,
+                "image" => $User->image,
+                "remember_token" => $User->remember_token
+
+
+            ];
+
+            array_push($list,$objetc);
         }
-
-        return response()->json($user);
+        return response()->json($list);
     }
+    public function item ($id) {
 
+        $User = User::where('id','=',$id)->first();
+
+        $object = [
+
+            "id" => $User->id,
+            "name" => $User->name,
+            "surname" => $User->surname,
+            "email" => $User->email,
+            "phone" => $User->phone,
+            "email_verified_at" => $User->email_verified_at,
+          
+            "status" => $User->status, 
+            "level_id" => $User->level_id,
+            "image" => $User->image,
+            "remember_token" => $User->remember_token
+
+        ];
+
+        return response()->json($object);
+
+    }
     public function create(Request $request) {
         $data = $request->validate([
-            'name' => 'required|min:3',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
-            // Agrega validaciones para los demás campos como surname, phone, image, status, level_id, etc.
+            'name'=> 'required|min:3,max:50',
+            'surname'=> 'required|min:3,max:50',
+            'email'=> 'required|min:1,max:50',
+            'phone'=> 'required|min:1,max:50',
+            'password'=> 'required|min:1,max:50',
+            'image'=> 'required'
+        ]);
+        
+        $User = User::create([
+            'name'=> $data['name'],
+            'surname'=> $data['surname'],
+            'email'=> $data['email'],
+            'phone'=> $data['phone'],
+            'password'=> $data['password'],
+            'image'=> $data['image']
+
         ]);
 
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']), // Asegúrate de encriptar la contraseña
-            // Agrega los demás campos según sea necesario
-        ]);
+        if ($User) {
+            $object = [
 
-        if ($user) {
-            return response()->json(['message' => 'User created successfully'], 201);
-        } else {
-            return response()->json(['error' => 'Error creating user'], 500);
+                "response" => 'Succes.Itemsaved correctly.',
+                "data" => $User
+    
+            ];
+    
+            return response()->json($object);
+        }else {
+            $object = [
+
+                "response" => 'Error:Something went wrong, please try again.',
+    
+            ];
+    
+            return response()->json($object);
         }
+
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request){
         $data = $request->validate([
-            'name' => 'required|min:3',
-            'email' => 'required|email|unique:users,email,'.$id,
-            // Agrega validaciones para los demás campos que deseas actualizar
+            'id'=> 'required|min:1',
+            'name'=> 'required|min:3',
+            'surname'=> 'required|min:3',
+            'email'=> 'required|min:1',
+            'phone'=> 'required|min:1',
+            'password'=> 'required|min:1',
+            'status'=> 'required|min:1',
+            'level_id'=> 'required|min:1',
+            'image'=> 'required|min:1'
+            
         ]);
+        
+        $user = User::where("id","=", $data['id'])->first();
 
-        $user = User::find($id);
+        $user->name=$data['name'];
+        $user->surname=$data['surname'];
+        $user->email=$data['email'];
+        $user->phone=$data['phone'];
+        $user->password=$data['password'];
+        $user->status=$data['status'];
+        $user->level_id=$data['level_id'];
+        $user->image=$data['image'];
+        
+        if($user->update()){
+            $object =[
+            "response"=>'Sucess. Item update successfully.',
+            "data"=> $user
+            ];
 
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
+            return response()->json($object);
+        } else {
+            $object = [
+
+                "response" => 'Error:Something went wrong, please try again.',
+                "data"=> $user
+    
+            ];
+    
+            return response()->json($object);
         }
-
-        $user->update([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            // Actualiza los demás campos según sea necesario
-        ]);
-
-        return response()->json(['message' => 'User updated successfully'], 200);
     }
-
-    public function delete($id) {
-        $user = User::find($id);
-
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-
+    public function delete($id){
+        $user = User::findOrFail($id);
         $user->delete();
 
-        return response()->json(['message' => 'User deleted successfully'], 200);
+        return response()->json([
+            "response"=>'Sucess. Item deleted successfully.',
+        ]);
     }
 }
