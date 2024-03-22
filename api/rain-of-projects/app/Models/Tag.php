@@ -9,5 +9,5 @@ class Tag extends Model
 {
     use HasFactory;
 
-    
+    protected $fillable = ['name', 'priority', 'category', 'description'];
 }

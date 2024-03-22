@@ -108,4 +108,24 @@ class ProjectController extends Controller
             return response()->json($object, 500); // 500 Internal Server Error status code
         }
     }
+
+    public function delete($id) {
+        $project = Project::findOrFail($id);
+
+        $deleted = $project->delete();
+
+        if ($deleted) {
+            $object = [
+                "response" => 'Success: Item deleted correctly.',
+            ];
+
+            return response()->json($object, 200); // 200 OK status code
+        } else {
+            $object = [
+                "response" => 'Error: Something went wrong, please try again.',
+            ];
+
+            return response()->json($object, 500); // 500 Internal Server Error status code
+        }
+    }
 }
